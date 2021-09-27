@@ -22,12 +22,15 @@ fn probe_pkg_config() -> Option<Vec<PathBuf>> {
 fn probe_pothos_sdr() -> Option<Vec<PathBuf>> {
     #[cfg(windows)]
     {
+        eprintln!("Looking in PATH");
         let lib = "SoapySDR";
         let dll = lib.to_owned() + ".dll";
         let paths = env::var_os("PATH")?;
         for dir in env::split_paths(&paths) {
             let dll_path = dir.join(&dll);
             let inc_path = dir.join("../include");
+            eprintln!("{:?} {:?}", dll_path, dll_path.is_file());
+            eprintln!("{:?} {:?}", inc_path, inc_path.is_dir());
             if dll_path.is_file() && inc_path.is_dir() {
                 println!("cargo:rustc-link-search={}", dir.to_str().unwrap());
                 println!("cargo:rustc-link-lib={}", lib);
