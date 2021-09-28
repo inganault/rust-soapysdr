@@ -29,9 +29,15 @@ fn probe_pothos_sdr() -> Option<Vec<PathBuf>> {
         for dir in env::split_paths(&paths) {
             let dll_path = dir.join(&dll);
             let inc_path = dir.join("../include");
+            let lib_path = dir.join("../lib");
             eprintln!("{:?} {:?}", dll_path, dll_path.is_file());
             eprintln!("{:?} {:?}", inc_path, inc_path.is_dir());
             if dll_path.is_file() && inc_path.is_dir() {
+                // Add lib directory for MSVC
+                eprintln!("{:?} {:?}", lib_path, lib_path.is_dir());
+                if lib_path.is_dir() {
+                    println!("cargo:rustc-link-search={}", lib_path.to_str().unwrap());
+                }
                 println!("cargo:rustc-link-search={}", dir.to_str().unwrap());
                 println!("cargo:rustc-link-lib={}", lib);
                 return Some(vec![inc_path]);
